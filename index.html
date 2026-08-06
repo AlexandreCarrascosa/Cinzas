@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carta em Chamas</title>
+<meta name="description" content="Escreva o que precisa soltar. Depois, queime. Nada fica salvo, nada é enviado, nada é lembrado.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Newsreader:ital,wght@0,400;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:   #0c0a09;
+    --char:   #17130f;
+    --char-2: #1f1a15;
+    --ash:    #7a7168;
+    --ash-dim:#4a443d;
+    --paper:  #ece3d2;
+    --ember:  #e0551f;
+    --ember-2:#ff9142;
+    --ember-dim: #b5401a;
+    --line: rgba(236,227,210,0.08);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 600px at 50% 0%, #201a14 0%, var(--void) 60%),
+      var(--void);
+    color:var(--paper);
+    font-family:'Newsreader', serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow-x:hidden;
+  }
+
+  /* ambient floating embers in the background */
+  #ambient{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+  }
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:640px;
+    padding:8vh 24px 10vh;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:6vh;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+
+  h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:500;
+    font-style:italic;
+    font-size:clamp(1.4rem, 4vw, 1.9rem);
+    letter-spacing:0.01em;
+    margin:0;
+    color:var(--paper);
+  }
+
+  .tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ash);
+    white-space:nowrap;
+  }
+
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .stage{
+    position:relative;
+    flex:1;
+    min-height:320px;
+    display:flex;
+  }
+
+  .surface{
+    position:relative;
+    width:100%;
+    background:linear-gradient(180deg, var(--char) 0%, var(--char-2) 100%);
+    border:1px solid var(--line);
+    border-radius:2px;
+    box-shadow: 0 40px 80px -40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    padding:36px 32px;
+    display:flex;
+  }
+
+  textarea{
+    width:100%;
+    min-height:280px;
+    resize:vertical;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--paper);
+    font-family:'Newsreader', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:1.18rem;
+    line-height:1.7;
+    caret-color:var(--ember-2);
+  }
+
+  textarea::placeholder{
+    color:var(--ash-dim);
+    font-style:italic;
+  }
+
+  /* overlay shown during the burn — mirrors the textarea's text, non-interactive */
+  .burn-overlay{
+    position:absolute;
+    inset:36px 32px;
+    font-family:'Newsreader', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:1.18rem;
+    line-height:1.7;
+    color:var(--paper);
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    overflow:hidden;
+    pointer-events:none;
+    display:none;
+  }
+
+  .burn-line{
+    position:absolute;
+    left:0; right:0;
+    height:2px;
+    background:linear-gradient(90deg, transparent, var(--ember-2), var(--ember), transparent);
+    box-shadow: 0 0 16px 3px var(--ember), 0 0 40px 10px rgba(224,85,31,0.35);
+    display:none;
+  }
+
+  canvas#embers{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+
+  .aftermath{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .aftermath p{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.78rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ash);
+  }
+
+  footer{
+    margin-top:5vh;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+
+  .counter{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    color:var(--ash-dim);
+  }
+
+  button#burnBtn{
+    appearance:none;
+    border:1px solid var(--ember-dim);
+    background:transparent;
+    color:var(--paper);
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.78rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    padding:13px 26px;
+    border-radius:2px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease, opacity 0.25s ease;
+  }
+
+  button#burnBtn:hover:not(:disabled){
+    border-color:var(--ember);
+    background:rgba(224,85,31,0.08);
+  }
+
+  button#burnBtn:focus-visible{
+    outline:2px solid var(--ember-2);
+    outline-offset:3px;
+  }
+
+  button#burnBtn:disabled{
+    opacity:0.35;
+    cursor:default;
+  }
+
+  .flame{
+    width:9px; height:12px;
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(circle at 50% 70%, var(--ember-2), var(--ember) 70%, var(--ember-dim));
+    animation: flicker 1.6s ease-in-out infinite;
+    transform-origin:50% 100%;
+  }
+
+  @keyframes flicker{
+    0%,100%{ transform: scale(1) rotate(0deg); }
+    30%{ transform: scale(1.05, 0.92) rotate(-3deg); }
+    55%{ transform: scale(0.94, 1.08) rotate(2deg); }
+    80%{ transform: scale(1.02, 0.97) rotate(-1deg); }
+  }
+
+  .note{
+    max-width:640px;
+    width:100%;
+    margin-top:4vh;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.68rem;
+    line-height:1.7;
+    letter-spacing:0.03em;
+    color:var(--ash-dim);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .flame{ animation:none; }
+  }
+
+  @media (max-width:520px){
+    .surface{ padding:24px 20px; }
+    .burn-overlay{ inset:24px 20px; }
+    header{ margin-bottom:5vh; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="ambient"></canvas>
+
+<div class="wrap">
+  <header>
+    <h1>Carta em Chamas</h1>
+    <span class="tag">nada fica</span>
+  </header>
+
+  <main>
+    <div class="stage">
+      <div class="surface" id="surface">
+        <textarea id="editor" placeholder="Escreva o que você precisa soltar. Ninguém vai ler — nem você, depois."></textarea>
+        <div class="burn-overlay" id="overlay"></div>
+        <div class="burn-line" id="burnLine"></div>
+        <canvas id="embers"></canvas>
+        <div class="aftermath" id="aftermath"><p>queimado. nada foi salvo.</p></div>
+      </div>
+    </div>
+
+    <footer>
+      <span class="counter" id="counter">0 caracteres · 0 salvos, sempre</span>
+      <button id="burnBtn" type="button" disabled>
+        <span class="flame"></span>
+        <span>queimar</span>
+      </button>
+    </footer>
+  </main>
+
+  <p class="note">
+    Este app não tem banco de dados, não tem login, não envia nada pra lugar nenhum.
+    O texto existe só na memória da sua aba, enquanto você escreve. Ao queimar — ou ao fechar a página — ele desaparece de verdade.
+  </p>
+</div>
+
+<script>
+(function(){
+  const editor = document.getElementById('editor');
+  const overlay = document.getElementById('overlay');
+  const burnLine = document.getElementById('burnLine');
+  const surface = document.getElementById('surface');
+  const burnBtn = document.getElementById('burnBtn');
+  const counter = document.getElementById('counter');
+  const aftermath = document.getElementById('aftermath');
+  const embersCanvas = document.getElementById('embers');
+  const ectx = embersCanvas.getContext('2d');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function sizeCanvas(){
+    const r = surface.getBoundingClientRect();
+    embersCanvas.width = r.width * devicePixelRatio;
+    embersCanvas.height = r.height * devicePixelRatio;
+    embersCanvas.style.width = r.width + 'px';
+    embersCanvas.style.height = r.height + 'px';
+    ectx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  window.addEventListener('resize', sizeCanvas);
+  sizeCanvas();
+
+  function updateCounter(){
+    const n = editor.value.length;
+    counter.textContent = n + (n === 1 ? ' caractere' : ' caracteres') + ' · 0 salvos, sempre';
+    burnBtn.disabled = n === 0;
+  }
+  editor.addEventListener('input', updateCounter);
+  updateCounter();
+
+  let particles = [];
+  function spawnParticle(x, yBase, width){
+    particles.push({
+      x: x + (Math.random()-0.5)*width*0.02,
+      y: yBase,
+      vx: (Math.random()-0.5)*0.4,
+      vy: -(0.6 + Math.random()*1.1),
+      life: 1,
+      decay: 0.006 + Math.random()*0.01,
+      size: 1.5 + Math.random()*2.2,
+      hue: Math.random() > 0.5 ? '224,85,31' : '255,145,66'
+    });
+  }
+
+  function stepParticles(){
+    ectx.clearRect(0,0,embersCanvas.width, embersCanvas.height);
+    particles.forEach(p=>{
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy -= 0.004; // gentle upward acceleration, like heat
+      p.life -= p.decay;
+      if(p.life > 0){
+        ectx.beginPath();
+        ectx.fillStyle = `rgba(${p.hue}, ${Math.max(p.life,0)})`;
+        ectx.shadowColor = `rgba(${p.hue}, 0.8)`;
+        ectx.shadowBlur = 6;
+        ectx.arc(p.x, p.y, p.size * Math.max(p.life,0.1), 0, Math.PI*2);
+        ectx.fill();
+      }
+    });
+    particles = particles.filter(p => p.life > 0);
+  }
+
+  function burn(){
+    if(!editor.value || burnBtn.disabled) return;
+    burnBtn.disabled = true;
+
+    const text = editor.value;
+    overlay.textContent = text;
+    overlay.style.display = 'block';
+    editor.style.visibility = 'hidden';
+    burnLine.style.display = 'block';
+
+    const rect = surface.getBoundingClientRect();
+    const totalHeight = overlay.scrollHeight;
+    const duration = reducedMotion ? 500 : 2600;
+    const start = performance.now();
+    let raf;
+
+    function frame(now){
+      const t = Math.min((now - start) / duration, 1);
+      const eased = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; // easeInOutQuad
+      const burnY = eased * totalHeight;
+
+      overlay.style.clipPath = `inset(0 0 ${Math.max(0, totalHeight - burnY)}px 0)`;
+      overlay.style.color = `hsl(${28 - eased*8}, ${70 - eased*30}%, ${88 - eased*55}%)`;
+
+      const lineY = Math.min(burnY, totalHeight);
+      burnLine.style.top = lineY + 'px';
+      burnLine.style.opacity = t < 0.96 ? 1 : (1 - (t-0.96)/0.04);
+
+      if(!reducedMotion){
+        const emitCount = 1 + Math.floor(Math.random()*2);
+        for(let i=0;i<emitCount;i++){
+          spawnParticle(rect.width * Math.random(), lineY, rect.width);
+        }
+        stepParticles();
+      }
+
+      if(t < 1){
+        raf = requestAnimationFrame(frame);
+      }else{
+        finish();
+      }
+    }
+
+    function finish(){
+      if(!reducedMotion){
+        const settle = setInterval(()=>{
+          stepParticles();
+          if(particles.length === 0) clearInterval(settle);
+        }, 30);
+      }
+
+      burnLine.style.display = 'none';
+      overlay.style.display = 'none';
+      overlay.textContent = '';
+      overlay.style.clipPath = '';
+
+      // true erase — nothing is retained anywhere, not even in this variable
+      editor.value = '';
+
+      aftermath.style.transition = 'opacity 0.6s ease';
+      aftermath.style.opacity = '1';
+
+      setTimeout(()=>{
+        aftermath.style.opacity = '0';
+        setTimeout(()=>{
+          editor.style.visibility = 'visible';
+          updateCounter();
+          editor.focus();
+        }, 600);
+      }, 1600);
+    }
+
+    raf = requestAnimationFrame(frame);
+  }
+
+  burnBtn.addEventListener('click', burn);
+
+  // clearing the field on unload too — belt and suspenders, nothing to persist regardless
+  window.addEventListener('beforeunload', ()=>{ editor.value=''; });
+
+  /* ---------- faint ambient embers behind everything ---------- */
+  const ambient = document.getElementById('ambient');
+  const actx = ambient.getContext('2d');
+  let aParticles = [];
+  function sizeAmbient(){
+    ambient.width = window.innerWidth * devicePixelRatio;
+    ambient.height = window.innerHeight * devicePixelRatio;
+    ambient.style.width = window.innerWidth+'px';
+    ambient.style.height = window.innerHeight+'px';
+    actx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  window.addEventListener('resize', sizeAmbient);
+  sizeAmbient();
+
+  function seedAmbient(){
+    if(reducedMotion) return;
+    if(aParticles.length < 26 && Math.random() < 0.06){
+      aParticles.push({
+        x: Math.random()*window.innerWidth,
+        y: window.innerHeight + 10,
+        vx: (Math.random()-0.5)*0.15,
+        vy: -(0.15 + Math.random()*0.3),
+        size: 0.6 + Math.random()*1.4,
+        life: 0.15 + Math.random()*0.35,
+        decay: 0.0006 + Math.random()*0.001
+      });
+    }
+  }
+
+  function loopAmbient(){
+    actx.clearRect(0,0,ambient.width,ambient.height);
+    seedAmbient();
+    aParticles.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+      actx.beginPath();
+      actx.fillStyle = `rgba(224,85,31,${Math.max(p.life,0)})`;
+      actx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+      actx.fill();
+    });
+    aParticles = aParticles.filter(p=>p.life>0 && p.y > -10);
+    requestAnimationFrame(loopAmbient);
+  }
+  if(!reducedMotion) loopAmbient();
+})();
+</script>
+</body>
+</html>
