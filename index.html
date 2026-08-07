@@ -5,59 +5,83 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cinzas</title>
 <meta name="description" content="Escreva o que precisa soltar. Depois, queime. Nada fica salvo, nada é enviado, nada é lembrado.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Newsreader:ital,wght@0,400;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    --void:   #0c0a09;
-    --char:   #17130f;
-    --char-2: #1f1a15;
-    --ash:    #7a7168;
+    --void:#0c0a09;
+    --char:#17130f;
+    --char-2:#1f1a15;
+    --ash:#7a7168;
     --ash-dim:#4a443d;
-    --paper:  #ece3d2;
-    --ember:  #e0551f;
-    --ember-2:#ff9142;
-    --ember-dim: #b5401a;
-    --line: rgba(236,227,210,0.08);
+    --paper:#ece3d2;
 
-    --paper-bg:   #ede2c6;
-    --paper-bg-2: #e3d4ab;
-    --paper-edge: #d8c795;
-    --ink:        #2c231a;
-    --ink-dim:    #8c7f61;
-    --char-mark:  #241a10;
+    --ember:#e0551f;
+    --ember-2:#ff9142;
+    --ember-dim:#b5401a;
+
+    --line:rgba(236,227,210,0.08);
+
+    --paper-bg:#ede2c6;
+    --paper-bg-2:#e3d4ab;
+    --paper-edge:#d8c795;
+    --ink:#2c231a;
+    --ink-dim:#8c7f61;
+    --char-mark:#241a10;
   }
 
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
+  *{
+    box-sizing:border-box;
+  }
+
+  html,
+  body{
+    height:100%;
+  }
+
   body{
     margin:0;
     background:
-      radial-gradient(ellipse 900px 600px at 50% 0%, #201a14 0%, var(--void) 60%),
+      radial-gradient(
+        ellipse 900px 600px at 50% 0%,
+        #201a14 0%,
+        var(--void) 60%
+      ),
       var(--void);
+
     color:var(--paper);
     font-family:'Newsreader', serif;
     min-height:100vh;
+
     display:flex;
     flex-direction:column;
     align-items:center;
+
     overflow-x:hidden;
   }
 
-  /* ambient floating embers in the background */
   #ambient{
-    position:fixed; inset:0; pointer-events:none; z-index:0;
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
   }
 
   .wrap{
     position:relative;
     z-index:1;
+
     width:100%;
     max-width:640px;
+
     padding:8vh 24px 10vh;
+
     display:flex;
     flex-direction:column;
+
     min-height:100vh;
   }
 
@@ -65,6 +89,7 @@
     display:flex;
     justify-content:space-between;
     align-items:baseline;
+
     margin-bottom:6vh;
     gap:16px;
     flex-wrap:wrap;
@@ -75,9 +100,12 @@
     font-optical-sizing:auto;
     font-weight:500;
     font-style:italic;
+
     font-size:clamp(1.4rem, 4vw, 1.9rem);
+
     letter-spacing:0.01em;
     margin:0;
+
     color:var(--paper);
   }
 
@@ -105,50 +133,163 @@
 
   .surface{
     position:relative;
+
     width:100%;
+
     background:
-      radial-gradient(140% 100% at 15% 0%, var(--paper-bg) 0%, var(--paper-bg-2) 100%);
+      radial-gradient(
+        140% 100% at 15% 0%,
+        var(--paper-bg) 0%,
+        var(--paper-bg-2) 100%
+      );
+
     border:1px solid var(--paper-edge);
     border-radius:14px;
-    box-shadow: 0 40px 90px -35px rgba(0,0,0,0.75), 0 2px 0 rgba(0,0,0,0.15);
+
+    box-shadow:
+      0 40px 90px -35px rgba(0,0,0,0.75),
+      0 2px 0 rgba(0,0,0,0.15);
+
     padding:40px 36px;
+
     display:flex;
     overflow:hidden;
+
     min-height:420px;
+
+    transition:
+      filter .3s ease,
+      box-shadow .3s ease;
   }
 
+  /*
+    Textura envelhecida do papel.
+  */
   .surface::before{
-    /* aged paper: fibre grain + soft foxing stains + vignette */
     content:'';
-    position:absolute; inset:0;
+
+    position:absolute;
+    inset:0;
+
     background-image:
-      radial-gradient(ellipse 180px 130px at 8% 12%, rgba(120,90,45,0.14), transparent 60%),
-      radial-gradient(ellipse 140px 100px at 92% 20%, rgba(120,90,45,0.10), transparent 60%),
-      radial-gradient(ellipse 220px 160px at 78% 88%, rgba(120,90,45,0.13), transparent 60%),
-      radial-gradient(ellipse 160px 120px at 15% 92%, rgba(120,90,45,0.11), transparent 60%),
-      radial-gradient(ellipse 90px 90px at 55% 45%, rgba(120,90,45,0.06), transparent 60%),
-      repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, transparent 1px, transparent 3px),
-      repeating-linear-gradient(90deg, rgba(0,0,0,0.014) 0px, transparent 1px, transparent 4px),
-      radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(60,42,20,0.13) 100%);
+      radial-gradient(
+        ellipse 180px 130px at 8% 12%,
+        rgba(120,90,45,0.14),
+        transparent 60%
+      ),
+
+      radial-gradient(
+        ellipse 140px 100px at 92% 20%,
+        rgba(120,90,45,0.10),
+        transparent 60%
+      ),
+
+      radial-gradient(
+        ellipse 220px 160px at 78% 88%,
+        rgba(120,90,45,0.13),
+        transparent 60%
+      ),
+
+      radial-gradient(
+        ellipse 160px 120px at 15% 92%,
+        rgba(120,90,45,0.11),
+        transparent 60%
+      ),
+
+      radial-gradient(
+        ellipse 90px 90px at 55% 45%,
+        rgba(120,90,45,0.06),
+        transparent 60%
+      ),
+
+      repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.02) 0px,
+        transparent 1px,
+        transparent 3px
+      ),
+
+      repeating-linear-gradient(
+        90deg,
+        rgba(0,0,0,0.014) 0px,
+        transparent 1px,
+        transparent 4px
+      ),
+
+      radial-gradient(
+        120% 120% at 50% 50%,
+        transparent 55%,
+        rgba(60,42,20,0.13) 100%
+      );
+
     pointer-events:none;
+    z-index:0;
+  }
+
+  /*
+    Camada de escurecimento provocada pelo fogo.
+  */
+  .surface::after{
+    content:'';
+
+    position:absolute;
+    inset:0;
+
+    pointer-events:none;
+    z-index:2;
+
+    opacity:0;
+
+    background:
+      radial-gradient(
+        ellipse 180px 110px at var(--fire-x, 50%) var(--fire-y, 100%),
+        rgba(40,15,3,.42),
+        rgba(75,28,5,.18) 35%,
+        transparent 72%
+      );
+
+    mix-blend-mode:multiply;
+
+    transition:opacity .25s ease;
+  }
+
+  .surface.burning{
+    box-shadow:
+      0 40px 100px -30px rgba(0,0,0,.8),
+      0 0 45px rgba(224,85,31,.12);
+  }
+
+  .surface.burning::after{
+    opacity:1;
   }
 
   textarea{
     width:100%;
     min-height:340px;
+
     resize:vertical;
+
     background:transparent;
     border:none;
     outline:none;
+
     color:var(--ink);
+
     font-family:'Newsreader', serif;
     font-style:italic;
     font-weight:400;
+
     font-size:1.18rem;
     line-height:1.7;
+
     caret-color:var(--ember);
+
     position:relative;
     z-index:1;
+
+    transition:
+      opacity .15s ease,
+      filter .15s ease;
   }
 
   textarea::placeholder{
@@ -156,85 +297,168 @@
     font-style:italic;
   }
 
-  /* overlay shown during the burn — mirrors the textarea's text, non-interactive */
+  /*
+    Texto duplicado usado durante a combustão.
+  */
   .burn-overlay{
     position:absolute;
+
     inset:40px 36px;
+
     font-family:'Newsreader', serif;
     font-style:italic;
     font-weight:400;
+
     font-size:1.18rem;
     line-height:1.7;
+
     color:var(--ink);
+
     white-space:pre-wrap;
     word-wrap:break-word;
+
     overflow:hidden;
+
     pointer-events:none;
+
     display:none;
+
+    z-index:3;
+
+    transition:
+      filter .1s linear,
+      opacity .15s linear;
+  }
+
+  /*
+    Máscara de carbonização.
+  */
+  .burn-overlay::after{
+    content:'';
+
+    position:absolute;
+    inset:0;
+
+    background:
+      radial-gradient(
+        ellipse at 50% 100%,
+        rgba(35,20,8,.9),
+        transparent 55%
+      );
+
+    mix-blend-mode:multiply;
+
+    pointer-events:none;
   }
 
   canvas#embers{
     position:absolute;
+
     inset:0;
+
+    width:100%;
+    height:100%;
+
     pointer-events:none;
+
+    z-index:4;
   }
 
   .aftermath{
     position:absolute;
     inset:0;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     text-align:center;
+
     opacity:0;
+
     pointer-events:none;
+
+    z-index:5;
   }
 
   .aftermath p{
     font-family:'JetBrains Mono', monospace;
+
     font-size:0.78rem;
+
     letter-spacing:0.1em;
+
     text-transform:uppercase;
+
     color:var(--ink-dim);
+
+    text-shadow:0 1px 0 rgba(255,255,255,.25);
   }
 
   footer{
     margin-top:5vh;
+
     display:flex;
     justify-content:space-between;
     align-items:center;
+
     gap:16px;
     flex-wrap:wrap;
   }
 
   .counter{
     font-family:'JetBrains Mono', monospace;
+
     font-size:0.72rem;
+
     letter-spacing:0.08em;
+
     color:var(--ash-dim);
   }
 
   button#burnBtn{
     appearance:none;
+
     border:1px solid var(--ember-dim);
+
     background:transparent;
+
     color:var(--paper);
+
     font-family:'JetBrains Mono', monospace;
+
     font-size:0.78rem;
+
     letter-spacing:0.12em;
+
     text-transform:uppercase;
+
     padding:13px 26px;
+
     border-radius:2px;
+
     cursor:pointer;
+
     display:inline-flex;
     align-items:center;
+
     gap:10px;
-    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease, opacity 0.25s ease;
+
+    transition:
+      border-color .25s ease,
+      background .25s ease,
+      color .25s ease,
+      opacity .25s ease,
+      box-shadow .25s ease;
   }
 
   button#burnBtn:hover:not(:disabled){
     border-color:var(--ember);
-    background:rgba(224,85,31,0.08);
+
+    background:rgba(224,85,31,.08);
+
+    box-shadow:
+      0 0 25px rgba(224,85,31,.08);
   }
 
   button#burnBtn:focus-visible{
@@ -243,370 +467,1445 @@
   }
 
   button#burnBtn:disabled{
-    opacity:0.35;
+    opacity:.35;
     cursor:default;
   }
 
+  /*
+    Pequena chama do botão.
+  */
   .flame{
-    width:9px; height:12px;
-    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
-    background: radial-gradient(circle at 50% 70%, var(--ember-2), var(--ember) 70%, var(--ember-dim));
-    animation: flicker 1.6s ease-in-out infinite;
+    width:9px;
+    height:13px;
+
+    position:relative;
+
+    border-radius:
+      55% 45% 55% 45% /
+      65% 65% 35% 35%;
+
+    background:
+      radial-gradient(
+        circle at 50% 72%,
+        #fff1ad 0%,
+        #ffb52f 28%,
+        var(--ember) 68%,
+        var(--ember-dim) 100%
+      );
+
     transform-origin:50% 100%;
+
+    animation:flicker 1.15s ease-in-out infinite;
+
+    box-shadow:
+      0 0 7px rgba(255,130,40,.55);
   }
 
   @keyframes flicker{
-    0%,100%{ transform: scale(1) rotate(0deg); }
-    30%{ transform: scale(1.05, 0.92) rotate(-3deg); }
-    55%{ transform: scale(0.94, 1.08) rotate(2deg); }
-    80%{ transform: scale(1.02, 0.97) rotate(-1deg); }
+    0%,100%{
+      transform:scale(1) rotate(0deg);
+    }
+
+    25%{
+      transform:scale(.82,1.18) rotate(-4deg);
+    }
+
+    50%{
+      transform:scale(1.12,.9) rotate(3deg);
+    }
+
+    72%{
+      transform:scale(.9,1.1) rotate(-2deg);
+    }
   }
 
   .note{
     max-width:640px;
     width:100%;
+
     margin-top:4vh;
+
     font-family:'JetBrains Mono', monospace;
-    font-size:0.68rem;
+
+    font-size:.68rem;
     line-height:1.7;
-    letter-spacing:0.03em;
+
+    letter-spacing:.03em;
+
     color:var(--ash-dim);
   }
 
-  @media (prefers-reduced-motion: reduce){
-    .flame{ animation:none; }
+  @media (prefers-reduced-motion:reduce){
+    .flame{
+      animation:none;
+    }
   }
 
   @media (max-width:520px){
-    .surface{ padding:26px 22px; border-radius:10px; min-height:380px; }
-    .burn-overlay{ inset:26px 22px; }
-    header{ margin-bottom:5vh; }
+    .surface{
+      padding:26px 22px;
+      border-radius:10px;
+      min-height:380px;
+    }
+
+    .burn-overlay{
+      inset:26px 22px;
+    }
+
+    header{
+      margin-bottom:5vh;
+    }
   }
 </style>
 </head>
+
 <body>
 
 <canvas id="ambient"></canvas>
 
 <div class="wrap">
+
   <header>
     <h1>Cinzas</h1>
     <span class="tag">nada fica</span>
   </header>
 
   <main>
+
     <div class="stage">
+
       <div class="surface" id="surface">
-        <textarea id="editor" placeholder="Escreva o que você precisa soltar. Ninguém vai ler — nem você, depois."></textarea>
-        <div class="burn-overlay" id="overlay"></div>
+
+        <textarea
+          id="editor"
+          placeholder="Escreva o que você precisa soltar. Ninguém vai ler — nem você, depois."
+        ></textarea>
+
+        <div
+          class="burn-overlay"
+          id="overlay"
+        ></div>
+
         <canvas id="embers"></canvas>
-        <div class="aftermath" id="aftermath"><p>queimado. nada foi salvo.</p></div>
+
+        <div class="aftermath" id="aftermath">
+          <p>queimado. nada foi salvo.</p>
+        </div>
+
       </div>
+
     </div>
 
     <footer>
-      <span class="counter" id="counter">0 caracteres · 0 salvos, sempre</span>
+
+      <span class="counter" id="counter">
+        0 caracteres · 0 salvos, sempre
+      </span>
+
       <button id="burnBtn" type="button" disabled>
         <span class="flame"></span>
         <span>queimar</span>
       </button>
+
     </footer>
+
   </main>
 
   <p class="note">
     Este app não tem banco de dados, não tem login, não envia nada pra lugar nenhum.
-    O texto existe só na memória da sua aba, enquanto você escreve. Ao queimar — ou ao fechar a página — ele desaparece de verdade.
+    O texto existe só na memória da sua aba, enquanto você escreve.
+    Ao queimar — ou ao fechar a página — ele desaparece de verdade.
   </p>
+
 </div>
 
 <script>
 (function(){
+
   const editor = document.getElementById('editor');
   const overlay = document.getElementById('overlay');
   const surface = document.getElementById('surface');
   const burnBtn = document.getElementById('burnBtn');
   const counter = document.getElementById('counter');
   const aftermath = document.getElementById('aftermath');
-  const embersCanvas = document.getElementById('embers');
-  const ectx = embersCanvas.getContext('2d');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function sizeCanvas(){
-    const r = surface.getBoundingClientRect();
-    embersCanvas.width = r.width * devicePixelRatio;
-    embersCanvas.height = r.height * devicePixelRatio;
-    embersCanvas.style.width = r.width + 'px';
-    embersCanvas.style.height = r.height + 'px';
-    ectx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  const canvas = document.getElementById('embers');
+  const ctx = canvas.getContext('2d');
+
+  const reducedMotion =
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+
+  /*
+  ============================================================
+  CANVAS
+  ============================================================
+  */
+
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resizeCanvas(){
+
+    const rect = surface.getBoundingClientRect();
+
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
-  window.addEventListener('resize', sizeCanvas);
-  sizeCanvas();
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+
+  /*
+  ============================================================
+  CONTADOR
+  ============================================================
+  */
 
   function updateCounter(){
+
     const n = editor.value.length;
-    counter.textContent = n + (n === 1 ? ' caractere' : ' caracteres') + ' · 0 salvos, sempre';
+
+    counter.textContent =
+      n +
+      (n === 1 ? ' caractere' : ' caracteres') +
+      ' · 0 salvos, sempre';
+
     burnBtn.disabled = n === 0;
   }
+
   editor.addEventListener('input', updateCounter);
   updateCounter();
 
+
+  /*
+  ============================================================
+  FIRE ENGINE
+  ============================================================
+  */
+
+  let fireParticles = [];
+  let smokeParticles = [];
   let sparks = [];
+  let ashParticles = [];
+
+  let burning = false;
+
+  let burnProgress = 0;
+
+  let fireZones = [];
+
+  let fireX = 0;
+  let fireY = 0;
+
+
+  /*
+    Cria um ponto de combustão.
+  */
+  function createFireZone(x, y){
+
+    return {
+      x,
+      y,
+
+      width:12 + Math.random() * 28,
+
+      intensity:.5 + Math.random() * .5,
+
+      phase:Math.random() * Math.PI * 2,
+
+      speed:.7 + Math.random() * .9,
+
+      life:1
+    };
+  }
+
+
+  /*
+    Partícula individual de chama.
+  */
+  function spawnFire(x, y, intensity = 1){
+
+    const size =
+      (3 + Math.random() * 8) *
+      intensity;
+
+    fireParticles.push({
+
+      x,
+      y,
+
+      vx:(Math.random() - .5) * 1.3,
+
+      vy:-(1.2 + Math.random() * 2.8) * intensity,
+
+      gravity:-0.012,
+
+      size,
+
+      life:1,
+
+      decay:.018 + Math.random() * .035,
+
+      turbulence:.3 + Math.random() * .8,
+
+      phase:Math.random() * Math.PI * 2,
+
+      heat:.65 + Math.random() * .35
+    });
+  }
+
+
+  /*
+    Faísca pequena.
+  */
   function spawnSpark(x, y){
+
     sparks.push({
-      x, y,
-      vx: (Math.random()-0.5)*0.7,
-      vy: -(0.7 + Math.random()*1.5),
-      life: 1,
-      decay: 0.008 + Math.random()*0.014,
-      size: 1.3 + Math.random()*2.2,
-      hue: Math.random() > 0.5 ? '224,85,31' : '255,180,90'
+
+      x,
+      y,
+
+      vx:(Math.random() - .5) * 2.2,
+
+      vy:-(1.2 + Math.random() * 3.2),
+
+      gravity:.025 + Math.random() * .025,
+
+      size:.5 + Math.random() * 1.8,
+
+      life:1,
+
+      decay:.025 + Math.random() * .035
     });
   }
 
-  let ash = [];
-  function spawnAsh(x, y, width){
-    ash.push({
-      x, y,
-      vx: (Math.random()-0.5)*0.5,
-      vy: 0.3 + Math.random()*0.6,
-      gravity: 0.012 + Math.random()*0.01,
-      drift: (Math.random()-0.5)*0.02,
-      angle: Math.random()*Math.PI*2,
-      spin: (Math.random()-0.5)*0.1,
-      life: 1,
-      decay: 0.004 + Math.random()*0.006,
-      size: 1.5 + Math.random()*3,
-      tone: Math.random() > 0.4 ? '216,206,182' : '120,100,80'
+
+  /*
+    Fumaça.
+  */
+  function spawnSmoke(x, y){
+
+    smokeParticles.push({
+
+      x,
+      y,
+
+      vx:(Math.random() - .5) * .35,
+
+      vy:-(.25 + Math.random() * .55),
+
+      size:4 + Math.random() * 8,
+
+      life:.45 + Math.random() * .3,
+
+      decay:.003 + Math.random() * .006,
+
+      phase:Math.random() * Math.PI * 2
     });
   }
 
-  function drawSparks(){
-    sparks.forEach(p=>{
-      p.x += p.vx; p.y += p.vy; p.vy -= 0.005;
-      p.life -= p.decay;
-      if(p.life > 0){
-        ectx.beginPath();
-        ectx.fillStyle = `rgba(${p.hue}, ${Math.max(p.life,0)})`;
-        ectx.shadowColor = `rgba(${p.hue}, 0.85)`;
-        ectx.shadowBlur = 6;
-        ectx.arc(p.x, p.y, p.size * Math.max(p.life,0.1), 0, Math.PI*2);
-        ectx.fill();
+
+  /*
+    Cinza / pedaço carbonizado.
+  */
+  function spawnAsh(x, y){
+
+    ashParticles.push({
+
+      x,
+      y,
+
+      vx:(Math.random() - .7) * 1.1,
+
+      vy:-(.2 + Math.random() * 1.5),
+
+      gravity:.025 + Math.random() * .025,
+
+      size:1 + Math.random() * 3.5,
+
+      rotation:Math.random() * Math.PI * 2,
+
+      spin:(Math.random() - .5) * .12,
+
+      life:1,
+
+      decay:.004 + Math.random() * .008,
+
+      dark:Math.random() > .35
+    });
+  }
+
+
+  /*
+  ============================================================
+  DESENHO DA CHAMA
+  ============================================================
+  */
+
+  function drawFlame(p){
+
+    const alpha = Math.max(0, p.life);
+
+    const size =
+      p.size *
+      (.55 + p.life * .65);
+
+    /*
+      Forma de gota irregular.
+    */
+
+    const wobble =
+      Math.sin(p.phase + performance.now() * .008) *
+      size *
+      .18;
+
+    ctx.save();
+
+    ctx.translate(
+      p.x,
+      p.y
+    );
+
+    ctx.rotate(
+      p.vx * .08
+    );
+
+    /*
+      Glow externo.
+    */
+
+    const glow = ctx.createRadialGradient(
+      0,
+      0,
+      0,
+      0,
+      0,
+      size * 2.8
+    );
+
+    glow.addColorStop(
+      0,
+      `rgba(255,145,45,${.18 * alpha})`
+    );
+
+    glow.addColorStop(
+      1,
+      'rgba(255,60,0,0)'
+    );
+
+    ctx.fillStyle = glow;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      size * 2.8,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /*
+      Corpo da chama.
+    */
+
+    const gradient = ctx.createRadialGradient(
+      wobble * .2,
+      size * .35,
+      0,
+      wobble,
+      -size * .2,
+      size * 1.5
+    );
+
+    gradient.addColorStop(
+      0,
+      `rgba(255,248,190,${.98 * alpha})`
+    );
+
+    gradient.addColorStop(
+      .16,
+      `rgba(255,205,75,${.96 * alpha})`
+    );
+
+    gradient.addColorStop(
+      .42,
+      `rgba(255,105,22,${.88 * alpha})`
+    );
+
+    gradient.addColorStop(
+      .72,
+      `rgba(205,43,8,${.55 * alpha})`
+    );
+
+    gradient.addColorStop(
+      1,
+      'rgba(100,15,2,0)'
+    );
+
+    ctx.fillStyle = gradient;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      size * 1.1
+    );
+
+    ctx.bezierCurveTo(
+      -size * .95,
+      size * .45,
+      -size * .65,
+      -size * .35,
+      wobble,
+      -size * 1.55
+    );
+
+    ctx.bezierCurveTo(
+      size * .2,
+      -size * .75,
+      size * .95,
+      -.1 * size,
+      size * .55,
+      size * .55
+    );
+
+    ctx.bezierCurveTo(
+      size * .35,
+      size * .9,
+      size * .15,
+      size * 1.05,
+      0,
+      size * 1.1
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+
+  /*
+  ============================================================
+  ATUALIZAÇÃO DO FOGO
+  ============================================================
+  */
+
+  function updateFire(){
+
+    const time = performance.now();
+
+    /*
+      Cria novas chamas em cada zona.
+    */
+
+    fireZones.forEach(zone => {
+
+      zone.phase += .03 * zone.speed;
+
+      const wobble =
+        Math.sin(
+          zone.phase +
+          time * .002
+        ) * zone.width * .45;
+
+      const x =
+        zone.x +
+        wobble;
+
+      const y =
+        zone.y -
+        Math.random() * 5;
+
+      const amount =
+        Math.random() < .65 ? 1 : 2;
+
+      for(let i = 0; i < amount; i++){
+
+        spawnFire(
+          x + (Math.random() - .5) * zone.width,
+          y,
+          zone.intensity
+        );
+      }
+
+      /*
+        Faíscas ocasionais.
+      */
+
+      if(Math.random() < .13){
+
+        spawnSpark(
+          x,
+          y
+        );
+      }
+
+      /*
+        Fumaça bem discreta.
+      */
+
+      if(Math.random() < .035){
+
+        spawnSmoke(
+          x,
+          y - 8
+        );
       }
     });
-    sparks = sparks.filter(p => p.life > 0);
-  }
 
-  function drawAsh(){
-    ash.forEach(p=>{
-      p.vy += p.gravity * 0.06;
-      p.x += p.vx + Math.sin(p.angle)*p.drift*10;
+
+    /*
+      Atualiza partículas.
+    */
+
+    fireParticles.forEach(p => {
+
+      p.phase += .04;
+
+      p.vx +=
+        Math.sin(
+          p.phase +
+          p.y * .025
+        ) *
+        .008 *
+        p.turbulence;
+
+      p.vy += p.gravity;
+
+      p.x += p.vx;
       p.y += p.vy;
-      p.angle += p.spin;
+
       p.life -= p.decay;
+
       if(p.life > 0){
-        ectx.save();
-        ectx.globalAlpha = Math.max(p.life, 0);
-        ectx.translate(p.x, p.y);
-        ectx.rotate(p.angle);
-        ectx.fillStyle = `rgb(${p.tone})`;
-        ectx.shadowBlur = 0;
-        ectx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.7);
-        ectx.restore();
+
+        drawFlame(p);
       }
     });
-    ash = ash.filter(p => p.life > 0);
+
+    fireParticles =
+      fireParticles.filter(
+        p => p.life > 0
+      );
+
+
+    /*
+      Sparks.
+    */
+
+    sparks.forEach(p => {
+
+      p.vy += p.gravity;
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      p.life -= p.decay;
+
+      if(p.life > 0){
+
+        const alpha =
+          Math.max(0, p.life);
+
+        ctx.save();
+
+        ctx.globalCompositeOperation = 'lighter';
+
+        ctx.shadowColor =
+          `rgba(255,130,30,${alpha})`;
+
+        ctx.shadowBlur = 7;
+
+        ctx.fillStyle =
+          `rgba(255,190,80,${alpha})`;
+
+        ctx.beginPath();
+
+        ctx.arc(
+          p.x,
+          p.y,
+          p.size,
+          0,
+          Math.PI * 2
+        );
+
+        ctx.fill();
+
+        ctx.restore();
+      }
+    });
+
+    sparks =
+      sparks.filter(
+        p => p.life > 0
+      );
+
+
+    /*
+      Fumaça.
+    */
+
+    smokeParticles.forEach(p => {
+
+      p.x +=
+        p.vx +
+        Math.sin(
+          performance.now() * .001 +
+          p.phase
+        ) * .12;
+
+      p.y += p.vy;
+
+      p.size += .018;
+
+      p.life -= p.decay;
+
+      if(p.life > 0){
+
+        ctx.save();
+
+        ctx.globalAlpha =
+          Math.max(0, p.life) * .18;
+
+        ctx.fillStyle =
+          '#4b4035';
+
+        ctx.filter =
+          `blur(${Math.max(2, p.size * .3)}px)`;
+
+        ctx.beginPath();
+
+        ctx.arc(
+          p.x,
+          p.y,
+          p.size,
+          0,
+          Math.PI * 2
+        );
+
+        ctx.fill();
+
+        ctx.restore();
+      }
+    });
+
+    smokeParticles =
+      smokeParticles.filter(
+        p => p.life > 0
+      );
+
+
+    /*
+      Cinzas.
+    */
+
+    ashParticles.forEach(p => {
+
+      p.vy += p.gravity;
+
+      p.x +=
+        p.vx +
+        Math.sin(
+          p.y * .03
+        ) * .15;
+
+      p.y += p.vy;
+
+      p.rotation += p.spin;
+
+      p.life -= p.decay;
+
+      if(p.life > 0){
+
+        ctx.save();
+
+        ctx.translate(
+          p.x,
+          p.y
+        );
+
+        ctx.rotate(
+          p.rotation
+        );
+
+        ctx.globalAlpha =
+          Math.max(0, p.life);
+
+        ctx.fillStyle =
+          p.dark
+            ? 'rgba(48,37,27,.75)'
+            : 'rgba(120,105,82,.65)';
+
+        ctx.fillRect(
+          -p.size / 2,
+          -p.size / 2,
+          p.size,
+          p.size * .7
+        );
+
+        ctx.restore();
+      }
+    });
+
+    ashParticles =
+      ashParticles.filter(
+        p => p.life > 0
+      );
   }
+
+
+  /*
+  ============================================================
+  ANIMAÇÃO DE QUEIMA
+  ============================================================
+  */
 
   function burn(){
-    if(!editor.value || burnBtn.disabled) return;
-    burnBtn.disabled = true;
 
-    const text = editor.value;
+    if(!editor.value || burnBtn.disabled)
+      return;
+
+    burnBtn.disabled = true;
+    burning = true;
+
+    surface.classList.add('burning');
+
+    const text =
+      editor.value;
+
+    /*
+      Copia o texto temporariamente para a
+      camada visual.
+
+      Depois ele é destruído.
+    */
+
     overlay.textContent = text;
     overlay.style.display = 'block';
+
     editor.style.visibility = 'hidden';
 
-    const overlayWidth = overlay.clientWidth;
-    const totalHeight = overlay.scrollHeight;
-    const duration = reducedMotion ? 500 : 3200;
-    const start = performance.now();
 
-    const oRect = overlay.getBoundingClientRect();
-    const sRect = surface.getBoundingClientRect();
-    const PAD_X = oRect.left - sRect.left;
-    const PAD_Y = oRect.top - sRect.top;
+    const overlayRect =
+      overlay.getBoundingClientRect();
 
-    // an irregular burning edge: N columns, each with its own jittering height,
-    // so the fire eats the paper unevenly instead of a straight line
-    const SEGMENTS = 22;
-    const segW = overlayWidth / SEGMENTS;
-    const jitter = new Array(SEGMENTS + 1).fill(0).map(()=> Math.random());
-    const jitterTarget = jitter.slice();
+    const surfaceRect =
+      surface.getBoundingClientRect();
 
-    function edgeY(baseY, i){
-      // baseY = the smooth overall progress; jitter[i] pushes that column's
-      // flame tongue further up or lags it slightly behind
-      return baseY + (jitter[i] - 0.5) * Math.min(baseY * 0.5, 34);
+    const offsetX =
+      overlayRect.left -
+      surfaceRect.left;
+
+    const offsetY =
+      overlayRect.top -
+      surfaceRect.top;
+
+    const width =
+      overlayRect.width;
+
+    const height =
+      overlayRect.height;
+
+
+    /*
+      Quantidade de zonas de fogo.
+
+      Quanto maior, menos "linha"
+      e mais combustão orgânica.
+    */
+
+    const zoneCount =
+      Math.max(
+        8,
+        Math.floor(width / 38)
+      );
+
+
+    fireZones = [];
+
+    for(let i = 0; i < zoneCount; i++){
+
+      fireZones.push(
+        createFireZone(
+          offsetX +
+          (i / (zoneCount - 1)) *
+          width +
+          (Math.random() - .5) * 18,
+
+          offsetY +
+          height -
+          4 -
+          Math.random() * 12
+        )
+      );
     }
+
+
+    /*
+      Duração.
+    */
+
+    const duration =
+      reducedMotion
+        ? 600
+        : 4300;
+
+    const start =
+      performance.now();
+
+
+    /*
+      Loop da combustão.
+    */
 
     function frame(now){
-      const t = Math.min((now - start) / duration, 1);
-      const eased = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; // easeInOutQuad
-      const baseY = eased * (totalHeight + 20) - 10;
 
-      // slowly wander the per-column jitter so the edge flickers as it climbs
-      for(let i=0;i<jitter.length;i++){
-        jitter[i] += (jitterTarget[i] - jitter[i]) * 0.08;
-        if(Math.random() < 0.05) jitterTarget[i] = Math.random();
+      const elapsed =
+        now - start;
+
+      const raw =
+        Math.min(
+          elapsed / duration,
+          1
+        );
+
+      /*
+        Curva mais natural.
+      */
+
+      burnProgress =
+        raw * raw * (3 - 2 * raw);
+
+
+      /*
+        Fogo sobe.
+
+        Mas cada zona recebe
+        uma pequena variação.
+      */
+
+      fireZones.forEach((zone, index) => {
+
+        const localVariation =
+          Math.sin(
+            index * 1.7 +
+            now * .0015
+          ) * 15;
+
+        zone.y =
+          offsetY +
+          height -
+          burnProgress * height +
+          localVariation;
+      });
+
+
+      /*
+        Coordenadas para o CSS
+        escurecer o papel.
+      */
+
+      if(fireZones.length){
+
+        const center =
+          fireZones[
+            Math.floor(
+              fireZones.length / 2
+            )
+          ];
+
+        fireX = center.x;
+        fireY = center.y;
+
+        surface.style.setProperty(
+          '--fire-x',
+          fireX + 'px'
+        );
+
+        surface.style.setProperty(
+          '--fire-y',
+          fireY + 'px'
+        );
       }
 
-      // build the jagged clip-path polygon (visible = above the flame edge)
-      const pts = ['0px 0px', `${overlayWidth}px 0px`];
-      for(let i = SEGMENTS; i >= 0; i--){
-        const y = Math.max(0, Math.min(totalHeight, edgeY(baseY, i)));
-        pts.push(`${Math.round(i*segW)}px ${Math.round(y)}px`);
+
+      /*
+        Limpa canvas.
+      */
+
+      ctx.clearRect(
+        0,
+        0,
+        canvas.width / dpr,
+        canvas.height / dpr
+      );
+
+
+      /*
+        Modo de composição aditiva
+        para o brilho das chamas.
+      */
+
+      ctx.globalCompositeOperation =
+        'lighter';
+
+      updateFire();
+
+      ctx.globalCompositeOperation =
+        'source-over';
+
+
+      /*
+        Carbonização visual do texto.
+
+        Conforme o fogo sobe,
+        aumentamos o contraste e escurecemos.
+      */
+
+      const burnAmount =
+        Math.min(
+          1,
+          burnProgress * 1.25
+        );
+
+      overlay.style.filter =
+        `
+          contrast(${1 + burnAmount * .25})
+          brightness(${1 - burnAmount * .72})
+          saturate(${1 - burnAmount * .75})
+        `;
+
+
+      /*
+        Algumas partículas pretas começam
+        a se desprender.
+      */
+
+      if(
+        !reducedMotion &&
+        burnProgress > .35 &&
+        Math.random() < .22
+      ){
+
+        const zone =
+          fireZones[
+            Math.floor(
+              Math.random() *
+              fireZones.length
+            )
+          ];
+
+        spawnAsh(
+          zone.x +
+          (Math.random() - .5) * 20,
+
+          zone.y +
+          Math.random() * 8
+        );
       }
-      overlay.style.clipPath = `polygon(${pts.join(',')})`;
 
-      // char band + glowing jagged flame line, drawn on canvas above the paper
-      ectx.clearRect(0,0,embersCanvas.width/devicePixelRatio, embersCanvas.height/devicePixelRatio);
 
-      ectx.save();
-      ectx.translate(PAD_X, PAD_Y);
+      if(raw < 1){
 
-      ectx.beginPath();
-      for(let i=0;i<=SEGMENTS;i++){
-        const x = i*segW;
-        const y = Math.max(0, Math.min(totalHeight, edgeY(baseY, i)));
-        if(i===0) ectx.moveTo(x,y); else ectx.lineTo(x,y);
-      }
-      ectx.lineJoin = 'round';
-      ectx.strokeStyle = 'rgba(36,22,12,0.55)';
-      ectx.lineWidth = 10;
-      ectx.stroke();
-
-      ectx.beginPath();
-      for(let i=0;i<=SEGMENTS;i++){
-        const x = i*segW;
-        const y = Math.max(0, Math.min(totalHeight, edgeY(baseY, i)));
-        if(i===0) ectx.moveTo(x,y); else ectx.lineTo(x,y);
-      }
-      ectx.strokeStyle = 'rgba(255,145,66,0.95)';
-      ectx.shadowColor = 'rgba(224,85,31,0.9)';
-      ectx.shadowBlur = 14;
-      ectx.lineWidth = 2.5;
-      ectx.stroke();
-      ectx.shadowBlur = 0;
-
-      if(!reducedMotion){
-        const emitCount = 1 + Math.floor(Math.random()*2);
-        for(let i=0;i<emitCount;i++){
-          const seg = Math.floor(Math.random()*SEGMENTS);
-          const x = seg*segW + Math.random()*segW;
-          const y = Math.max(0, Math.min(totalHeight, edgeY(baseY, seg)));
-          spawnSpark(x, y);
-        }
-        drawSparks();
-      }
-      ectx.restore();
-
-      if(t < 1){
         requestAnimationFrame(frame);
+
       }else{
-        finish(overlayWidth);
+
+        finish(
+          offsetX,
+          offsetY,
+          width,
+          height
+        );
       }
     }
 
-    function finish(width){
-      overlay.style.display = 'none';
-      overlay.textContent = '';
-      overlay.style.clipPath = '';
-
-      // true erase — nothing is retained anywhere, not even in this variable
-      editor.value = '';
-
-      if(!reducedMotion){
-        for(let i=0;i<46;i++){
-          spawnAsh(Math.random()*width, -4 - Math.random()*10, width);
-        }
-        const settle = setInterval(()=>{
-          ectx.save();
-          ectx.translate(PAD_X, PAD_Y);
-          ectx.clearRect(-PAD_X, -PAD_Y, embersCanvas.width/devicePixelRatio, embersCanvas.height/devicePixelRatio);
-          drawSparks();
-          drawAsh();
-          ectx.restore();
-          if(sparks.length === 0 && ash.length === 0) clearInterval(settle);
-        }, 30);
-      } else {
-        ectx.clearRect(0,0,embersCanvas.width/devicePixelRatio, embersCanvas.height/devicePixelRatio);
-      }
-
-      aftermath.style.transition = 'opacity 0.6s ease';
-      aftermath.style.opacity = '1';
-
-      setTimeout(()=>{
-        aftermath.style.opacity = '0';
-        setTimeout(()=>{
-          editor.style.visibility = 'visible';
-          updateCounter();
-          editor.focus();
-        }, 600);
-      }, 1700);
-    }
 
     requestAnimationFrame(frame);
   }
 
-  burnBtn.addEventListener('click', burn);
 
-  // clearing the field on unload too — belt and suspenders, nothing to persist regardless
-  window.addEventListener('beforeunload', ()=>{ editor.value=''; });
+  /*
+  ============================================================
+  FINALIZAÇÃO
+  ============================================================
+  */
 
-  /* ---------- faint ambient embers behind everything ---------- */
-  const ambient = document.getElementById('ambient');
-  const actx = ambient.getContext('2d');
-  let aParticles = [];
-  function sizeAmbient(){
-    ambient.width = window.innerWidth * devicePixelRatio;
-    ambient.height = window.innerHeight * devicePixelRatio;
-    ambient.style.width = window.innerWidth+'px';
-    ambient.style.height = window.innerHeight+'px';
-    actx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  function finish(
+    offsetX,
+    offsetY,
+    width,
+    height
+  ){
+
+    /*
+      Explosão final de pequenas brasas.
+    */
+
+    if(!reducedMotion){
+
+      for(let i = 0; i < 55; i++){
+
+        const x =
+          offsetX +
+          Math.random() * width;
+
+        const y =
+          offsetY +
+          height * .45 +
+          Math.random() *
+          height * .5;
+
+        spawnAsh(
+          x,
+          y
+        );
+      }
+
+
+      /*
+        Algumas faíscas finais.
+      */
+
+      for(let i = 0; i < 25; i++){
+
+        spawnSpark(
+          offsetX +
+          Math.random() * width,
+
+          offsetY +
+          height * .15 +
+          Math.random() *
+          height * .7
+        );
+      }
+    }
+
+
+    /*
+      Agora sim.
+
+      O conteúdo desaparece.
+    */
+
+    overlay.style.opacity = '0';
+
+    setTimeout(() => {
+
+      overlay.style.display = 'none';
+      overlay.style.opacity = '1';
+
+      overlay.textContent = '';
+      overlay.style.filter = '';
+
+      editor.value = '';
+
+      surface.classList.remove(
+        'burning'
+      );
+
+      surface.style.removeProperty(
+        '--fire-x'
+      );
+
+      surface.style.removeProperty(
+        '--fire-y'
+      );
+
+      /*
+        Mensagem.
+      */
+
+      aftermath.style.transition =
+        'opacity .7s ease';
+
+      aftermath.style.opacity = '1';
+
+
+      /*
+        Deixa as cinzas terminarem
+        enquanto a mensagem aparece.
+      */
+
+      setTimeout(() => {
+
+        aftermath.style.opacity = '0';
+
+        setTimeout(() => {
+
+          burning = false;
+
+          editor.style.visibility =
+            'visible';
+
+          updateCounter();
+
+          editor.focus();
+
+        }, 650);
+
+      }, 1500);
+
+    }, 180);
+
+
+    /*
+      Limpeza visual das partículas.
+    */
+
+    const cleanupStart =
+      performance.now();
+
+    function cleanup(now){
+
+      ctx.clearRect(
+        0,
+        0,
+        canvas.width / dpr,
+        canvas.height / dpr
+      );
+
+      ctx.globalCompositeOperation =
+        'lighter';
+
+      updateFire();
+
+      ctx.globalCompositeOperation =
+        'source-over';
+
+      /*
+        Mantém algumas cinzas
+        até elas morrerem naturalmente.
+      */
+
+      if(
+        now - cleanupStart < 3500 &&
+        (
+          ashParticles.length ||
+          sparks.length ||
+          smokeParticles.length ||
+          fireParticles.length
+        )
+      ){
+
+        requestAnimationFrame(cleanup);
+
+      }else{
+
+        fireParticles = [];
+        sparks = [];
+        smokeParticles = [];
+        ashParticles = [];
+
+        ctx.clearRect(
+          0,
+          0,
+          canvas.width / dpr,
+          canvas.height / dpr
+        );
+      }
+    }
+
+    requestAnimationFrame(cleanup);
   }
-  window.addEventListener('resize', sizeAmbient);
+
+
+  burnBtn.addEventListener(
+    'click',
+    burn
+  );
+
+
+  /*
+  ============================================================
+  LIMPEZA DE SEGURANÇA
+  ============================================================
+  */
+
+  window.addEventListener(
+    'beforeunload',
+    () => {
+      editor.value = '';
+    }
+  );
+
+
+  /*
+  ============================================================
+  AMBIENT EMBERS
+  ============================================================
+  */
+
+  const ambient =
+    document.getElementById('ambient');
+
+  const actx =
+    ambient.getContext('2d');
+
+  let ambientParticles = [];
+
+
+  function sizeAmbient(){
+
+    ambient.width =
+      window.innerWidth * dpr;
+
+    ambient.height =
+      window.innerHeight * dpr;
+
+    ambient.style.width =
+      window.innerWidth + 'px';
+
+    ambient.style.height =
+      window.innerHeight + 'px';
+
+    actx.setTransform(
+      dpr,
+      0,
+      0,
+      dpr,
+      0,
+      0
+    );
+  }
+
+
+  window.addEventListener(
+    'resize',
+    sizeAmbient
+  );
+
   sizeAmbient();
 
-  function seedAmbient(){
-    if(reducedMotion) return;
-    if(aParticles.length < 26 && Math.random() < 0.06){
-      aParticles.push({
-        x: Math.random()*window.innerWidth,
-        y: window.innerHeight + 10,
-        vx: (Math.random()-0.5)*0.15,
-        vy: -(0.15 + Math.random()*0.3),
-        size: 0.6 + Math.random()*1.4,
-        life: 0.15 + Math.random()*0.35,
-        decay: 0.0006 + Math.random()*0.001
-      });
-    }
+
+  function spawnAmbient(){
+
+    if(
+      ambientParticles.length >= 28
+    )
+      return;
+
+    if(
+      Math.random() > .06
+    )
+      return;
+
+    ambientParticles.push({
+
+      x:
+        Math.random() *
+        window.innerWidth,
+
+      y:
+        window.innerHeight + 10,
+
+      vx:
+        (Math.random() - .5) *
+        .15,
+
+      vy:
+        -(
+          .15 +
+          Math.random() * .3
+        ),
+
+      size:
+        .5 +
+        Math.random() * 1.5,
+
+      life:
+        .15 +
+        Math.random() * .35,
+
+      decay:
+        .0006 +
+        Math.random() * .001
+    });
   }
 
-  function loopAmbient(){
-    actx.clearRect(0,0,ambient.width,ambient.height);
-    seedAmbient();
-    aParticles.forEach(p=>{
-      p.x += p.vx; p.y += p.vy; p.life -= p.decay;
-      actx.beginPath();
-      actx.fillStyle = `rgba(224,85,31,${Math.max(p.life,0)})`;
-      actx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-      actx.fill();
+
+  function ambientLoop(){
+
+    actx.clearRect(
+      0,
+      0,
+      ambient.width,
+      ambient.height
+    );
+
+    spawnAmbient();
+
+
+    ambientParticles.forEach(p => {
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      p.life -= p.decay;
+
+      if(p.life > 0){
+
+        actx.beginPath();
+
+        actx.fillStyle =
+          `rgba(
+            224,
+            85,
+            31,
+            ${Math.max(p.life, 0)}
+          )`;
+
+        actx.shadowColor =
+          'rgba(224,85,31,.45)';
+
+        actx.shadowBlur = 5;
+
+        actx.arc(
+          p.x,
+          p.y,
+          p.size,
+          0,
+          Math.PI * 2
+        );
+
+        actx.fill();
+      }
     });
-    aParticles = aParticles.filter(p=>p.life>0 && p.y > -10);
-    requestAnimationFrame(loopAmbient);
+
+
+    ambientParticles =
+      ambientParticles.filter(
+        p =>
+          p.life > 0 &&
+          p.y > -10
+      );
+
+
+    requestAnimationFrame(
+      ambientLoop
+    );
   }
-  if(!reducedMotion) loopAmbient();
+
+
+  if(!reducedMotion){
+
+    ambientLoop();
+  }
+
 })();
 </script>
+
 </body>
 </html>
