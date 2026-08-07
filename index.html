@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carta em Chamas</title>
+<title>Cinzas</title>
 <meta name="description" content="Escreva o que precisa soltar. Depois, queime. Nada fica salvo, nada é enviado, nada é lembrado.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +20,13 @@
     --ember-2:#ff9142;
     --ember-dim: #b5401a;
     --line: rgba(236,227,210,0.08);
+
+    --paper-bg:   #ede2c6;
+    --paper-bg-2: #e3d4ab;
+    --paper-edge: #d8c795;
+    --ink:        #2c231a;
+    --ink-dim:    #8c7f61;
+    --char-mark:  #241a10;
   }
 
   *{box-sizing:border-box;}
@@ -99,58 +106,70 @@
   .surface{
     position:relative;
     width:100%;
-    background:linear-gradient(180deg, var(--char) 0%, var(--char-2) 100%);
-    border:1px solid var(--line);
-    border-radius:2px;
-    box-shadow: 0 40px 80px -40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-    padding:36px 32px;
+    background:
+      radial-gradient(140% 100% at 15% 0%, var(--paper-bg) 0%, var(--paper-bg-2) 100%);
+    border:1px solid var(--paper-edge);
+    border-radius:14px;
+    box-shadow: 0 40px 90px -35px rgba(0,0,0,0.75), 0 2px 0 rgba(0,0,0,0.15);
+    padding:40px 36px;
     display:flex;
+    overflow:hidden;
+    min-height:420px;
+  }
+
+  .surface::before{
+    /* aged paper: fibre grain + soft foxing stains + vignette */
+    content:'';
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(ellipse 180px 130px at 8% 12%, rgba(120,90,45,0.14), transparent 60%),
+      radial-gradient(ellipse 140px 100px at 92% 20%, rgba(120,90,45,0.10), transparent 60%),
+      radial-gradient(ellipse 220px 160px at 78% 88%, rgba(120,90,45,0.13), transparent 60%),
+      radial-gradient(ellipse 160px 120px at 15% 92%, rgba(120,90,45,0.11), transparent 60%),
+      radial-gradient(ellipse 90px 90px at 55% 45%, rgba(120,90,45,0.06), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, transparent 1px, transparent 3px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.014) 0px, transparent 1px, transparent 4px),
+      radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(60,42,20,0.13) 100%);
+    pointer-events:none;
   }
 
   textarea{
     width:100%;
-    min-height:280px;
+    min-height:340px;
     resize:vertical;
     background:transparent;
     border:none;
     outline:none;
-    color:var(--paper);
+    color:var(--ink);
     font-family:'Newsreader', serif;
     font-style:italic;
     font-weight:400;
     font-size:1.18rem;
     line-height:1.7;
-    caret-color:var(--ember-2);
+    caret-color:var(--ember);
+    position:relative;
+    z-index:1;
   }
 
   textarea::placeholder{
-    color:var(--ash-dim);
+    color:var(--ink-dim);
     font-style:italic;
   }
 
   /* overlay shown during the burn — mirrors the textarea's text, non-interactive */
   .burn-overlay{
     position:absolute;
-    inset:36px 32px;
+    inset:40px 36px;
     font-family:'Newsreader', serif;
     font-style:italic;
     font-weight:400;
     font-size:1.18rem;
     line-height:1.7;
-    color:var(--paper);
+    color:var(--ink);
     white-space:pre-wrap;
     word-wrap:break-word;
     overflow:hidden;
     pointer-events:none;
-    display:none;
-  }
-
-  .burn-line{
-    position:absolute;
-    left:0; right:0;
-    height:2px;
-    background:linear-gradient(90deg, transparent, var(--ember-2), var(--ember), transparent);
-    box-shadow: 0 0 16px 3px var(--ember), 0 0 40px 10px rgba(224,85,31,0.35);
     display:none;
   }
 
@@ -176,7 +195,7 @@
     font-size:0.78rem;
     letter-spacing:0.1em;
     text-transform:uppercase;
-    color:var(--ash);
+    color:var(--ink-dim);
   }
 
   footer{
@@ -259,8 +278,8 @@
   }
 
   @media (max-width:520px){
-    .surface{ padding:24px 20px; }
-    .burn-overlay{ inset:24px 20px; }
+    .surface{ padding:26px 22px; border-radius:10px; min-height:380px; }
+    .burn-overlay{ inset:26px 22px; }
     header{ margin-bottom:5vh; }
   }
 </style>
@@ -271,7 +290,7 @@
 
 <div class="wrap">
   <header>
-    <h1>Carta em Chamas</h1>
+    <h1>Cinzas</h1>
     <span class="tag">nada fica</span>
   </header>
 
@@ -280,7 +299,6 @@
       <div class="surface" id="surface">
         <textarea id="editor" placeholder="Escreva o que você precisa soltar. Ninguém vai ler — nem você, depois."></textarea>
         <div class="burn-overlay" id="overlay"></div>
-        <div class="burn-line" id="burnLine"></div>
         <canvas id="embers"></canvas>
         <div class="aftermath" id="aftermath"><p>queimado. nada foi salvo.</p></div>
       </div>
@@ -305,7 +323,6 @@
 (function(){
   const editor = document.getElementById('editor');
   const overlay = document.getElementById('overlay');
-  const burnLine = document.getElementById('burnLine');
   const surface = document.getElementById('surface');
   const burnBtn = document.getElementById('burnBtn');
   const counter = document.getElementById('counter');
@@ -333,37 +350,71 @@
   editor.addEventListener('input', updateCounter);
   updateCounter();
 
-  let particles = [];
-  function spawnParticle(x, yBase, width){
-    particles.push({
-      x: x + (Math.random()-0.5)*width*0.02,
-      y: yBase,
-      vx: (Math.random()-0.5)*0.4,
-      vy: -(0.6 + Math.random()*1.1),
+  let sparks = [];
+  function spawnSpark(x, y){
+    sparks.push({
+      x, y,
+      vx: (Math.random()-0.5)*0.7,
+      vy: -(0.7 + Math.random()*1.5),
       life: 1,
-      decay: 0.006 + Math.random()*0.01,
-      size: 1.5 + Math.random()*2.2,
-      hue: Math.random() > 0.5 ? '224,85,31' : '255,145,66'
+      decay: 0.008 + Math.random()*0.014,
+      size: 1.3 + Math.random()*2.2,
+      hue: Math.random() > 0.5 ? '224,85,31' : '255,180,90'
     });
   }
 
-  function stepParticles(){
-    ectx.clearRect(0,0,embersCanvas.width, embersCanvas.height);
-    particles.forEach(p=>{
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy -= 0.004; // gentle upward acceleration, like heat
+  let ash = [];
+  function spawnAsh(x, y, width){
+    ash.push({
+      x, y,
+      vx: (Math.random()-0.5)*0.5,
+      vy: 0.3 + Math.random()*0.6,
+      gravity: 0.012 + Math.random()*0.01,
+      drift: (Math.random()-0.5)*0.02,
+      angle: Math.random()*Math.PI*2,
+      spin: (Math.random()-0.5)*0.1,
+      life: 1,
+      decay: 0.004 + Math.random()*0.006,
+      size: 1.5 + Math.random()*3,
+      tone: Math.random() > 0.4 ? '216,206,182' : '120,100,80'
+    });
+  }
+
+  function drawSparks(){
+    sparks.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.vy -= 0.005;
       p.life -= p.decay;
       if(p.life > 0){
         ectx.beginPath();
         ectx.fillStyle = `rgba(${p.hue}, ${Math.max(p.life,0)})`;
-        ectx.shadowColor = `rgba(${p.hue}, 0.8)`;
+        ectx.shadowColor = `rgba(${p.hue}, 0.85)`;
         ectx.shadowBlur = 6;
         ectx.arc(p.x, p.y, p.size * Math.max(p.life,0.1), 0, Math.PI*2);
         ectx.fill();
       }
     });
-    particles = particles.filter(p => p.life > 0);
+    sparks = sparks.filter(p => p.life > 0);
+  }
+
+  function drawAsh(){
+    ash.forEach(p=>{
+      p.vy += p.gravity * 0.06;
+      p.x += p.vx + Math.sin(p.angle)*p.drift*10;
+      p.y += p.vy;
+      p.angle += p.spin;
+      p.life -= p.decay;
+      if(p.life > 0){
+        ectx.save();
+        ectx.globalAlpha = Math.max(p.life, 0);
+        ectx.translate(p.x, p.y);
+        ectx.rotate(p.angle);
+        ectx.fillStyle = `rgb(${p.tone})`;
+        ectx.shadowBlur = 0;
+        ectx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.7);
+        ectx.restore();
+      }
+    });
+    ash = ash.filter(p => p.life > 0);
   }
 
   function burn(){
@@ -374,56 +425,122 @@
     overlay.textContent = text;
     overlay.style.display = 'block';
     editor.style.visibility = 'hidden';
-    burnLine.style.display = 'block';
 
-    const rect = surface.getBoundingClientRect();
+    const overlayWidth = overlay.clientWidth;
     const totalHeight = overlay.scrollHeight;
-    const duration = reducedMotion ? 500 : 2600;
+    const duration = reducedMotion ? 500 : 3200;
     const start = performance.now();
-    let raf;
+
+    const oRect = overlay.getBoundingClientRect();
+    const sRect = surface.getBoundingClientRect();
+    const PAD_X = oRect.left - sRect.left;
+    const PAD_Y = oRect.top - sRect.top;
+
+    // an irregular burning edge: N columns, each with its own jittering height,
+    // so the fire eats the paper unevenly instead of a straight line
+    const SEGMENTS = 22;
+    const segW = overlayWidth / SEGMENTS;
+    const jitter = new Array(SEGMENTS + 1).fill(0).map(()=> Math.random());
+    const jitterTarget = jitter.slice();
+
+    function edgeY(baseY, i){
+      // baseY = the smooth overall progress; jitter[i] pushes that column's
+      // flame tongue further up or lags it slightly behind
+      return baseY + (jitter[i] - 0.5) * Math.min(baseY * 0.5, 34);
+    }
 
     function frame(now){
       const t = Math.min((now - start) / duration, 1);
       const eased = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; // easeInOutQuad
-      const burnY = eased * totalHeight;
+      const baseY = eased * (totalHeight + 20) - 10;
 
-      overlay.style.clipPath = `inset(0 0 ${Math.max(0, totalHeight - burnY)}px 0)`;
-      overlay.style.color = `hsl(${28 - eased*8}, ${70 - eased*30}%, ${88 - eased*55}%)`;
+      // slowly wander the per-column jitter so the edge flickers as it climbs
+      for(let i=0;i<jitter.length;i++){
+        jitter[i] += (jitterTarget[i] - jitter[i]) * 0.08;
+        if(Math.random() < 0.05) jitterTarget[i] = Math.random();
+      }
 
-      const lineY = Math.min(burnY, totalHeight);
-      burnLine.style.top = lineY + 'px';
-      burnLine.style.opacity = t < 0.96 ? 1 : (1 - (t-0.96)/0.04);
+      // build the jagged clip-path polygon (visible = above the flame edge)
+      const pts = ['0px 0px', `${overlayWidth}px 0px`];
+      for(let i = SEGMENTS; i >= 0; i--){
+        const y = Math.max(0, Math.min(totalHeight, edgeY(baseY, i)));
+        pts.push(`${Math.round(i*segW)}px ${Math.round(y)}px`);
+      }
+      overlay.style.clipPath = `polygon(${pts.join(',')})`;
+
+      // char band + glowing jagged flame line, drawn on canvas above the paper
+      ectx.clearRect(0,0,embersCanvas.width/devicePixelRatio, embersCanvas.height/devicePixelRatio);
+
+      ectx.save();
+      ectx.translate(PAD_X, PAD_Y);
+
+      ectx.beginPath();
+      for(let i=0;i<=SEGMENTS;i++){
+        const x = i*segW;
+        const y = Math.max(0, Math.min(totalHeight, edgeY(baseY, i)));
+        if(i===0) ectx.moveTo(x,y); else ectx.lineTo(x,y);
+      }
+      ectx.lineJoin = 'round';
+      ectx.strokeStyle = 'rgba(36,22,12,0.55)';
+      ectx.lineWidth = 10;
+      ectx.stroke();
+
+      ectx.beginPath();
+      for(let i=0;i<=SEGMENTS;i++){
+        const x = i*segW;
+        const y = Math.max(0, Math.min(totalHeight, edgeY(baseY, i)));
+        if(i===0) ectx.moveTo(x,y); else ectx.lineTo(x,y);
+      }
+      ectx.strokeStyle = 'rgba(255,145,66,0.95)';
+      ectx.shadowColor = 'rgba(224,85,31,0.9)';
+      ectx.shadowBlur = 14;
+      ectx.lineWidth = 2.5;
+      ectx.stroke();
+      ectx.shadowBlur = 0;
 
       if(!reducedMotion){
         const emitCount = 1 + Math.floor(Math.random()*2);
         for(let i=0;i<emitCount;i++){
-          spawnParticle(rect.width * Math.random(), lineY, rect.width);
+          const seg = Math.floor(Math.random()*SEGMENTS);
+          const x = seg*segW + Math.random()*segW;
+          const y = Math.max(0, Math.min(totalHeight, edgeY(baseY, seg)));
+          spawnSpark(x, y);
         }
-        stepParticles();
+        drawSparks();
       }
+      ectx.restore();
 
       if(t < 1){
-        raf = requestAnimationFrame(frame);
+        requestAnimationFrame(frame);
       }else{
-        finish();
+        finish(overlayWidth);
       }
     }
 
-    function finish(){
-      if(!reducedMotion){
-        const settle = setInterval(()=>{
-          stepParticles();
-          if(particles.length === 0) clearInterval(settle);
-        }, 30);
-      }
-
-      burnLine.style.display = 'none';
+    function finish(width){
       overlay.style.display = 'none';
       overlay.textContent = '';
       overlay.style.clipPath = '';
 
       // true erase — nothing is retained anywhere, not even in this variable
       editor.value = '';
+
+      if(!reducedMotion){
+        for(let i=0;i<46;i++){
+          spawnAsh(Math.random()*width, -4 - Math.random()*10, width);
+        }
+        const settle = setInterval(()=>{
+          ectx.save();
+          ectx.translate(PAD_X, PAD_Y);
+          ectx.clearRect(-PAD_X, -PAD_Y, embersCanvas.width/devicePixelRatio, embersCanvas.height/devicePixelRatio);
+          drawSparks();
+          drawAsh();
+          ectx.restore();
+          if(sparks.length === 0 && ash.length === 0) clearInterval(settle);
+        }, 30);
+      } else {
+        ectx.clearRect(0,0,embersCanvas.width/devicePixelRatio, embersCanvas.height/devicePixelRatio);
+      }
 
       aftermath.style.transition = 'opacity 0.6s ease';
       aftermath.style.opacity = '1';
@@ -435,10 +552,10 @@
           updateCounter();
           editor.focus();
         }, 600);
-      }, 1600);
+      }, 1700);
     }
 
-    raf = requestAnimationFrame(frame);
+    requestAnimationFrame(frame);
   }
 
   burnBtn.addEventListener('click', burn);
